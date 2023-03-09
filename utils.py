@@ -2,6 +2,8 @@ import os
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from numpy import savetxt
+
 GENERAL_CSV = "./data/general_data.csv"
 MANAGER_SURVEY_CSV = "./data/manager_survey_data.csv"
 EMPLOYEE_SURVEY_CSV = "./data/employee_survey_data.csv"
@@ -31,8 +33,11 @@ def Load_data(csv_path):
 
     return pd.read_csv(csv_path)
 
-# Data Save
-
+def Save_pipeline_data(data):
+    """
+    This function is use to save the 
+    """
+    savetxt('./pipeline/data.csv', data, delimiter=',')
 
 # Save model
 
