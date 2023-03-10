@@ -37,6 +37,10 @@ def Save_pipeline_data(data):
     """
     This function is use to save the 
     """
+
+    if not os.path.isdir('./pipeline'):
+        os.mkdir('./pipeline')
+        
     savetxt('./pipeline/data.csv', data, delimiter=',')
 
 # Save model
