@@ -1,6 +1,7 @@
 import utils as utl
 
 import numpy as np
+import pandas as pd
 
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -13,7 +14,8 @@ from sklearn.compose import ColumnTransformer
 
 # il faudra ajouter une fonction fpour ajouter les colone en plus``
 
-COLUMNS_TO_DROP = ['Age', 'Gender', 'DistanceFromHome', 'MaritalStatus', 'Over18']
+USELESS_COLUMNS_TO_DROP = ['EmployeeCount', 'Over18', 'StandardHours', 'EmployeeID']
+ETHICAL_COLUMNS_TO_DROP = ['Age', 'Gender', 'DistanceFromHome', 'MaritalStatus']
 
 
 
@@ -41,13 +43,25 @@ def Get_Columns_To_HotEncoder(data, columns_list):
 
 def TransformData():
 
-    general_data = utl.Load_data(utl.GENERAL_CSV)
-    print(general_data.head())
-    # general_data = Drop_Columns(general_data)
-    general_data.drop(COLUMNS_TO_DROP, axis=1, inplace=True)
-    print(general_data.head())
+    # Load csv data file
+    general_data = pd.read_csv(utl.GENERAL_CSV)
+    manager_survey_data = pd.read_csv(utl.MANAGER_SURVEY_CSV)
+    employee_survey_data = pd.read_csv(utl.EMPLOYEE_SURVEY_CSV)
+    # in_data = pd.read_csv(utl.IN_TIME_CSV)
+    # out_data = pd.read_csv(utl.OUT_TIME_CSV)
+    # print(general_data.head())
 
-    general_num = general_data.select_dtypes(include=[np.number]) 
+    # merge data together
+    full_data = pd.merge(general_data, manager_survey_data, on='EmployeeID')
+    full_data = pd.merge(full_data, employee_survey_data, on='EmployeeID')
+    print(full_data.head())
+
+    # Drop some columns
+    full_data.drop(ETHICAL_COLUMNS_TO_DROP, axis=1, inplace=True)
+    full_data.drop(USELESS_COLUMNS_TO_DROP, axis=1, inplace=True)
+    print(full_data.head())
+
+    general_num = full_data.select_dtypes(include=[np.number]) 
     # print("general num")
     # print(general_num)
     # print()
@@ -57,12 +71,12 @@ def TransformData():
     # print(num_attribs)
     # print(type(num_attribs))
 
-    general_string = general_data.select_dtypes(include=[object])
+    general_string = full_data.select_dtypes(include=[object])
     string_attribs = list(general_string)
-    print(string_attribs)
+    # print(string_attribs)
 
-    encoded_atribs = Get_Columns_To_HotEncoder(general_data, string_attribs)
-    print(encoded_atribs)
+    encoded_atribs = Get_Columns_To_HotEncoder(full_data, string_attribs)
+    # print(encoded_atribs)
 
 
     full_pipeline = ColumnTransformer([
@@ -71,7 +85,7 @@ def TransformData():
         ('one_hot', OneHotEncoder(), encoded_atribs[0])
     ])
 
-    treated_data = full_pipeline.fit_transform(general_data)
+    treated_data = full_pipeline.fit_transform(full_data)
 
     print(treated_data[0])
     print(len(treated_data[0]))
