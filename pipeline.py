@@ -6,6 +6,7 @@ import pandas as pd
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.impute import SimpleImputer
+from sklearn.impute import KNNImputer
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.compose import ColumnTransformer
@@ -21,7 +22,8 @@ ETHICAL_COLUMNS_TO_DROP = ['Age', 'Gender', 'DistanceFromHome', 'MaritalStatus']
 
 
 transform_pipeline = Pipeline([
-    ('imputer', SimpleImputer(strategy="median")),
+    # ('imputer', SimpleImputer(strategy="median")),
+    ('imputer', KNNImputer(n_neighbors=5)),
     ('std_scaler', StandardScaler()),
 ])
 
@@ -82,10 +84,11 @@ def TransformData():
     full_pipeline = ColumnTransformer([
         ('transform', transform_pipeline, num_attribs),
         ('ordinal', OrdinalEncoder(), encoded_atribs[1]),
-        ('one_hot', OneHotEncoder(), encoded_atribs[0])
+        ('one_hot', OneHotEncoder(), encoded_atribs[0]),
     ])
 
     treated_data = full_pipeline.fit_transform(full_data)
+
 
     print(treated_data[0])
     print(len(treated_data[0]))
@@ -93,24 +96,4 @@ def TransformData():
 
     utl.Save_pipeline_data(treated_data)
 
-
-
-# class FullPipeline:
-#     def __init__(self, data):
-#         pass
-
-#     def transform(self):
-#         pass
-
-#     transform_pipeline = Pipeline([
-#         ('imputer', SimpleImputer(strategy="median")),
-#         ('std_scaler', StandardScaler()),
-#     ])
-
-#     housing_num = housing.select_dtypes(include=[np.number]) 
-#     num_attribs = list(housing_num)
-
-#     full_pipeline = ColumnTransformer([
-#         ('transform', transform_pipeline, num_attribs),
-
-#     ])
+    return treated_data

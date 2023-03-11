@@ -4,5 +4,5 @@ import pipeline as pl
 if __name__ == "__main__":
     print("bloop")
 
-    pl.TransformData()
+    data = pl.TransformData()
 
