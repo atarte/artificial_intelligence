@@ -1,5 +1,6 @@
 import utils as utl
-
+import time
+import datetime
 import numpy as np
 import pandas as pd
 
@@ -17,9 +18,6 @@ from sklearn.compose import ColumnTransformer
 
 USELESS_COLUMNS_TO_DROP = ['Attrition', 'EmployeeCount', 'Over18', 'StandardHours', 'EmployeeID']
 ETHICAL_COLUMNS_TO_DROP = ['Age', 'Gender', 'DistanceFromHome', 'MaritalStatus']
-
-
-
 
 transform_pipeline = Pipeline([
     # ('imputer', SimpleImputer(strategy="median")),
@@ -43,19 +41,88 @@ def Get_Columns_To_HotEncoder(data, columns_list):
 
 # def Get_Columns_To_OrdinalEncoder(data, columns_list):
 
+# def MeanDataframe(data):
+#     # mean = 0
+#     nb_row = len(in_data)
+#     nb_column = len(in_data.columns)
+
+#     for row in range(nb_row):
+#         mean_sum = 0
+#         mean_nb = 0
+
+#         for column in range(1, nb_column):
+#             print(row)
+#             print(column)
+#             value_str = str(in_data.iat[row, column])
+
+#             if value_str != "nan":
+#                 value = time.mktime(datetime.datetime.strptime(value_str, "%Y-%m-%d %H:%M:%S").timetuple())
+#                 print(value)
+            
+#                 mean_nb += 1
+#                 mean_sum += value
+
+#         mean = mean_sum / mean_nb
+#         # print(mean)
+
+def InOutMean():
+    in_data = pd.read_csv(utl.IN_TIME_CSV)
+    out_data = pd.read_csv(utl.OUT_TIME_CSV)
+
+    nb_row = len(in_data)
+    nb_column = len(in_data.columns)
+
+    mean_array = []
+
+    for row in range(nb_row):
+        mean_sum_in = 0
+        mean_sum_out = 0
+        
+        mean_nb_in = 0
+        mean_nb_out = 0
+
+        for column in range(1, nb_column):
+            value_str_in = str(in_data.iat[row, column])
+            value_str_out = str(out_data.iat[row, column])
+
+            if value_str_in != "nan":
+                value_in = time.mktime(datetime.datetime.strptime(value_str_in, "%Y-%m-%d %H:%M:%S").timetuple())
+            
+                mean_nb_in += 1
+                mean_sum_in += value_in
+
+            if value_str_out != "nan":
+                value_out = time.mktime(datetime.datetime.strptime(value_str_out, "%Y-%m-%d %H:%M:%S").timetuple())
+            
+                mean_nb_out += 1
+                mean_sum_out += value_out
+
+
+        # mean_in = mean_sum_in / mean_nb_in
+        # mean_out = mean_sum_out / mean_nb_out
+        # standart_day = 28800
+
+        mean = (mean_sum_out / mean_nb_out) - (mean_sum_in / mean_nb_in) - 28800
+        mean_array.append(mean)
+        # print(mean)
+
+    data_dict = {'EmployeeID': list(range(1, nb_row+1)), 'MeanHours': mean_array}
+    data = pd.DataFrame(data=data_dict)
+
+    return data
+
 def TransformData():
 
     # Load csv data file
     general_data = pd.read_csv(utl.GENERAL_CSV)
     manager_survey_data = pd.read_csv(utl.MANAGER_SURVEY_CSV)
     employee_survey_data = pd.read_csv(utl.EMPLOYEE_SURVEY_CSV)
-    # in_data = pd.read_csv(utl.IN_TIME_CSV)
-    # out_data = pd.read_csv(utl.OUT_TIME_CSV)
-    # print(general_data.head())
+    in_out_data = InOutMean()
 
     # merge data together
     full_data = pd.merge(general_data, manager_survey_data, on='EmployeeID')
     full_data = pd.merge(full_data, employee_survey_data, on='EmployeeID')
+    full_data = pd.merge(full_data, in_out_data, on='EmployeeID')
     print(full_data.head())
 
     # Drop some columns
