@@ -14,7 +14,6 @@ from sklearn.compose import ColumnTransformer
 
 
 
-# il faudra ajouter une fonction fpour ajouter les colone en plus``
 
 USELESS_COLUMNS_TO_DROP = ['Attrition', 'EmployeeCount', 'Over18', 'StandardHours', 'EmployeeID']
 ETHICAL_COLUMNS_TO_DROP = ['Age', 'Gender', 'DistanceFromHome', 'MaritalStatus']
@@ -38,32 +37,6 @@ def Get_Columns_To_HotEncoder(data, columns_list):
             OrdinalEncoderColumns.append(column)
 
     return (OneHotEncoderColumns, OrdinalEncoderColumns)
-
-# def Get_Columns_To_OrdinalEncoder(data, columns_list):
-
-# def MeanDataframe(data):
-#     # mean = 0
-#     nb_row = len(in_data)
-#     nb_column = len(in_data.columns)
-
-#     for row in range(nb_row):
-#         mean_sum = 0
-#         mean_nb = 0
-
-#         for column in range(1, nb_column):
-#             print(row)
-#             print(column)
-#             value_str = str(in_data.iat[row, column])
-
-#             if value_str != "nan":
-#                 value = time.mktime(datetime.datetime.strptime(value_str, "%Y-%m-%d %H:%M:%S").timetuple())
-#                 print(value)
-            
-#                 mean_nb += 1
-#                 mean_sum += value
-
-#         mean = mean_sum / mean_nb
-#         # print(mean)
 
 def InOutMean():
     in_data = pd.read_csv(utl.IN_TIME_CSV)
@@ -111,6 +84,22 @@ def InOutMean():
 
     return data
 
+def Cord_data(data):
+    col = list(data.columns)
+    # print(col)
+
+    ordinal = OrdinalEncoder()
+    data = ordinal.fit_transform(data)
+
+    data = pd.DataFrame(data, columns=col)
+    # print(data.head())
+
+    cord = data.corr(numeric_only=True)
+    cord = cord['Attrition'].sort_values(ascending=False)
+    print("Correlation:")
+    print(cord)
+    print()
+
 def TransformData():
 
     # Load csv data file
@@ -123,12 +112,14 @@ def TransformData():
     full_data = pd.merge(general_data, manager_survey_data, on='EmployeeID')
     full_data = pd.merge(full_data, employee_survey_data, on='EmployeeID')
     full_data = pd.merge(full_data, in_out_data, on='EmployeeID')
-    print(full_data.head())
+    # print(full_data.head())
+
+    Cord_data(full_data)
 
     # Drop some columns
     full_data.drop(ETHICAL_COLUMNS_TO_DROP, axis=1, inplace=True)
     full_data.drop(USELESS_COLUMNS_TO_DROP, axis=1, inplace=True)
-    print(full_data.head())
+    # print(full_data.head())
 
     # Extract the target data ('Attrition') form the data set
     target_value = general_data.copy()
@@ -163,9 +154,9 @@ def TransformData():
     treated_data = full_pipeline.fit_transform(full_data)
 
 
-    print(treated_data[0])
-    print(len(treated_data[0]))
-    print(type(treated_data))
+    # print(treated_data[0])
+    # print(len(treated_data[0]))
+    # print(type(treated_data))
 
     # utl.Save_pipeline_data(treated_data)
 

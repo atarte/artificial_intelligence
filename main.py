@@ -1,12 +1,24 @@
 import utils as utl
 import model as mdl
 import pipeline as pl
+import matplotlib.pyplot as plt
 # from sklearn.model_selection import train_test_split
 
 from sklearn.linear_model import Perceptron
-# from sklearn.neural_network import MLPClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+
+
+
+def plot_roc_curve(fpr, tpr, label=None):
+    plt.plot(fpr, tpr, linewidth=2, label=label)
+    plt.plot([0, 1], [0, 1], 'k--')
+    plt.axis([0, 1, 0, 1])
+    plt.xlabel('False Positive Rate', fontsize=16)
+    plt.ylabel('True Positive Rate', fontsize=16)
+
 
 if __name__ == "__main__":
 
@@ -15,8 +27,26 @@ if __name__ == "__main__":
 
     model = SGDClassifier(max_iter=5)
 
-    mdl.Test_model(model, data, result)
+    models_name = ['SGD', 'Logistic Reg', 'Perceptron', 'RandomForestClassifier', 'MLP']
+    models_list = [SGDClassifier(max_iter=5), LogisticRegression(), Perceptron(max_iter=5), RandomForestClassifier(n_estimators=10), MLPClassifier(max_iter=5)]
+
+    roc_array = []
+
+    for i in range(len(models_list)):
+        print(models_name[i])
+        roc_data = mdl.Test_model(models_list[i], data, result)
+        print()
+
+        roc_array.append(roc_data)
     
+    len_roc = len(roc_array)
+    for i in range(len_roc-1):
+        plt.plot(roc_array[i][0], roc_array[i][1], linewidth=2, label=models_name[i])
+
+    plot_roc_curve(roc_array[len_roc-1][0], roc_array[len_roc-1][1], models_name[len_roc-1])
+    plt.legend(loc="lower right", fontsize=16)
+    plt.show()
+
     # Get a test data set to train our model
     # X_train, X_test, y_train, y_test = data[:2000], data[2000:], result[:2000], result[2000:]
     # train_set = train_test_split(data)
