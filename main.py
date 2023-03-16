@@ -9,15 +9,16 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
 
 
 
-def plot_roc_curve(fpr, tpr, label=None):
-    plt.plot(fpr, tpr, linewidth=2, label=label)
-    plt.plot([0, 1], [0, 1], 'k--')
-    plt.axis([0, 1, 0, 1])
-    plt.xlabel('False Positive Rate', fontsize=16)
-    plt.ylabel('True Positive Rate', fontsize=16)
+# def plot_roc_curve(fpr, tpr, label=None):
+#     plt.plot(fpr, tpr, linewidth=2, label=label)
+#     plt.plot([0, 1], [0, 1], 'k--')
+#     plt.axis([0, 1, 0, 1])
+#     plt.xlabel('False Positive Rate', fontsize=16)
+#     plt.ylabel('True Positive Rate', fontsize=16)
 
 
 if __name__ == "__main__":
@@ -27,8 +28,8 @@ if __name__ == "__main__":
 
     model = SGDClassifier(max_iter=5)
 
-    models_name = ['SGD', 'Logistic Reg', 'Perceptron', 'RandomForestClassifier', 'MLP']
-    models_list = [SGDClassifier(max_iter=5), LogisticRegression(), Perceptron(max_iter=5), RandomForestClassifier(n_estimators=10), MLPClassifier(max_iter=5)]
+    models_name = ['SGD', 'Logistic Reg', 'Arbre', 'RandomForestClassifier', 'MLP']
+    models_list = [SGDClassifier(max_iter=5), LogisticRegression(), DecisionTreeClassifier(), RandomForestClassifier(n_estimators=10), MLPClassifier(max_iter=5)]
 
     roc_array = []
 
@@ -43,7 +44,7 @@ if __name__ == "__main__":
     for i in range(len_roc-1):
         plt.plot(roc_array[i][0], roc_array[i][1], linewidth=2, label=models_name[i])
 
-    plot_roc_curve(roc_array[len_roc-1][0], roc_array[len_roc-1][1], models_name[len_roc-1])
+    mdl.plot_roc_curve(roc_array[len_roc-1][0], roc_array[len_roc-1][1], models_name[len_roc-1])
     plt.legend(loc="lower right", fontsize=16)
     plt.show()
 
