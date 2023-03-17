@@ -27,34 +27,34 @@ def Test_model(model, data, result):
     predict_data = model.predict(X_test)
 
     # cross validation
-    # cross_score = cross_val_score(model, X_train, y_train, cv=3, scoring="accuracy")
-    # print("Cross validation score:")
-    # print(cross_score)
-    # print()
+    cross_score = cross_val_score(model, X_train, y_train, cv=3, scoring="accuracy")
+    print("Cross validation score:")
+    print(cross_score)
+    print()
 
-    # # Confusion matrix
-    # matrix = confusion_matrix(y_test, predict_data)
-    # print("Confusion matrix:")
-    # print(matrix)
-    # print()
+    # Confusion matrix
+    matrix = confusion_matrix(y_test, predict_data)
+    print("Confusion matrix:")
+    print(matrix)
+    print()
 
-    # # Recall
-    # recall = recall_score(y_test, predict_data)
-    # print("Recall score:")
-    # print(recall)
-    # print()
+    # Recall
+    recall = recall_score(y_test, predict_data)
+    print("Recall score:")
+    print(recall)
+    print()
 
-    # # Accuracy
-    # precision = precision_score(y_test, predict_data)
-    # print("Precision score:")
-    # print(precision)
-    # print()
+    # Accuracy
+    precision = precision_score(y_test, predict_data)
+    print("Precision score:")
+    print(precision)
+    print()
 
-    # # f1 score
-    # f1 = f1_score(y_test, predict_data)
-    # print("F1 score:")
-    # print(f1)
-    # print()
+    # f1 score
+    f1 = f1_score(y_test, predict_data)
+    print("F1 score:")
+    print(f1)
+    print()
 
     # courbe de roc
     fpr, tpr, thresholds = roc_curve(y_test, predict_data)
